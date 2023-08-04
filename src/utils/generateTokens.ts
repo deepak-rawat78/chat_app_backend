@@ -4,12 +4,20 @@ import UserToken from "../models/userToken.model";
 const generateTokens = async (user: any) => {
 	try {
 		const payload = { ...user };
-		const accessToken = jwt.sign(payload, "private_key", {
-			expiresIn: "14m",
-		});
-		const refreshToken = jwt.sign(payload, "refresh_key", {
-			expiresIn: "30d",
-		});
+		const accessToken = jwt.sign(
+			payload,
+			process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
+			{
+				expiresIn: "14m",
+			}
+		);
+		const refreshToken = jwt.sign(
+			payload,
+			process.env.REFRESH_TOKEN_PRIVATE_KEY as string,
+			{
+				expiresIn: "30d",
+			}
+		);
 
 		const userToken = await UserToken.findOne({
 			userId: user._id,

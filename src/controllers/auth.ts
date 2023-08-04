@@ -24,7 +24,7 @@ export const signUpController = async (req: any, res: any) => {
 				error: "User already exist",
 			});
 		}
-		const salt = await bcrypt.genSalt(10);
+		const salt = await bcrypt.genSalt(Number(process.env.SALT));
 		const hashPassword = await bcrypt.hash(req.body.password, salt);
 		user = await new User({
 			...req.body,
@@ -90,9 +90,13 @@ export const getAccessToken = async (req: any, res: any) => {
 				const { tokenDetails } = result;
 				const payload = { ...tokenDetails?._doc };
 				log(payload, result, tokenDetails, tokenDetails._doc._id);
-				const accessToken = jwt.sign(payload, "private_key", {
-					expiresIn: "14m",
-				});
+				const accessToken = jwt.sign(
+					payload,
+					process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
+					{
+						expiresIn: "14m",
+					}
+				);
 
 				return res.json({
 					error: false,
@@ -115,7 +119,6 @@ export const getAccessToken = async (req: any, res: any) => {
 };
 
 export const verifyRefreshToken = (refreshToken: any) => {
-	const private_key = "refresh_key";
 	return new Promise((resolve, reject) => {
 		UserToken.findOne({ token: refreshToken })
 			.then((doc: any) => {
@@ -127,7 +130,7 @@ export const verifyRefreshToken = (refreshToken: any) => {
 				}
 				jwt.verify(
 					refreshToken,
-					private_key,
+					process.env.REFRESH_TOKEN_PRIVATE_KEY as string,
 					(err: any, tokenDetails: any) => {
 						if (err) {
 							return reject({
@@ -150,21 +153,4 @@ export const verifyRefreshToken = (refreshToken: any) => {
 				});
 			});
 	});
-};
-
-export const authenticate = (req: any, res: any, next: any) => {
-	const token = req.header("x-access-token");
-	if (!token) {
-		return res.json({
-			error: true,
-			message: "Access Denied: No token provided",
-		});
-	}
-	try {
-		const tokenDetails = jwt.verify(token, "private_key");
-		req.user = tokenDetails;
-		next();
-	} catch (error: any) {
-		return res.json({ error: true, message: error.message });
-	}
 };

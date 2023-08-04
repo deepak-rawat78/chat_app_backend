@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import * as http from "http";
+import "dotenv/config";
 
 const app = express();
 
@@ -11,13 +12,13 @@ app.use(express.json());
 
 let server: http.Server;
 
-const url = "mongodb://127.0.0.1:27017/chat_app";
+const url = process.env.MONGODB_URL as string;
 
 mongoose.connect(url).then(() => {
 	log("Connected to mongodb");
 
 	server = app.listen(8000, () => {
-		console.log("server started at 8000");
+		console.log("Server started at 8000");
 	});
 });
 

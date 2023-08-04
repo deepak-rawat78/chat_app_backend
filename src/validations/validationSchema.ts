@@ -1,5 +1,6 @@
 import Joi from "joi";
 import passwordComplexity from "joi-password-complexity";
+
 const complexityOptions = {
 	min: 3,
 	max: 26,
