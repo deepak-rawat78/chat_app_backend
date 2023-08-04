@@ -3,7 +3,8 @@ import UserToken from "../models/userToken.model";
 
 const generateTokens = async (user: any) => {
 	try {
-		const payload = { ...user };
+		const payload = { _id: user._id, userName: user.userName };
+
 		const accessToken = jwt.sign(
 			payload,
 			process.env.ACCESS_TOKEN_PRIVATE_KEY as string,

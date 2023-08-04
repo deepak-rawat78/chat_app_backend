@@ -88,8 +88,11 @@ export const getAccessToken = async (req: any, res: any) => {
 		verifyRefreshToken(req.body.refreshToken)
 			.then((result: any) => {
 				const { tokenDetails } = result;
-				const payload = { ...tokenDetails?._doc };
-				log(payload, result, tokenDetails, tokenDetails._doc._id);
+				const payload = { ...tokenDetails };
+
+				delete payload.exp;
+				delete payload.iat;
+
 				const accessToken = jwt.sign(
 					payload,
 					process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
