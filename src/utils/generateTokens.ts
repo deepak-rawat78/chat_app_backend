@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import UserToken from "../models/userToken.model";
 
+export const ACCESS_TOKEN_EXPIRES_IN = "15s";
+export const REFRESH_TOKEN_EXPIRES_IN = "30d";
+
 const generateTokens = async (user: any) => {
 	try {
 		const payload = { _id: user._id, userName: user.userName };
@@ -9,14 +12,14 @@ const generateTokens = async (user: any) => {
 			payload,
 			process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
 			{
-				expiresIn: "14m",
+				expiresIn: ACCESS_TOKEN_EXPIRES_IN,
 			}
 		);
 		const refreshToken = jwt.sign(
 			payload,
 			process.env.REFRESH_TOKEN_PRIVATE_KEY as string,
 			{
-				expiresIn: "30d",
+				expiresIn: REFRESH_TOKEN_EXPIRES_IN,
 			}
 		);
 

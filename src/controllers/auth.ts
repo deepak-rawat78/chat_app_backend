@@ -6,7 +6,9 @@ import {
 	signUpBodyValidation,
 } from "../validations/validationSchema";
 import bcrypt from "bcrypt";
-import generateTokens from "../utils/generateTokens";
+import generateTokens, {
+	ACCESS_TOKEN_EXPIRES_IN,
+} from "../utils/generateTokens";
 import UserToken from "../models/userToken.model";
 import jwt from "jsonwebtoken";
 
@@ -31,9 +33,16 @@ export const signUpController = async (req: any, res: any) => {
 			password: hashPassword,
 		}).save();
 
+		const { accessToken, refreshToken } = await generateTokens(user);
+
 		res.status(201).json({
 			error: false,
 			message: "Account created successfully.",
+			data: {
+				userData: user,
+				accessToken,
+				refreshToken,
+			},
 		});
 	} catch (error) {
 		return res.json({ error: "Something went wrong." });
@@ -65,6 +74,7 @@ export const loginController = async (req: any, res: any) => {
 		const { accessToken, refreshToken } = await generateTokens(user);
 		return res.json({
 			error: false,
+			data: user,
 			accessToken,
 			refreshToken,
 			message: "Logged in successfully",
@@ -97,7 +107,7 @@ export const getAccessToken = async (req: any, res: any) => {
 					payload,
 					process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
 					{
-						expiresIn: "14m",
+						expiresIn: ACCESS_TOKEN_EXPIRES_IN,
 					}
 				);
 

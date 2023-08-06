@@ -5,10 +5,12 @@ import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import * as http from "http";
 import "dotenv/config";
+var cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 let server: http.Server;
 
