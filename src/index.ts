@@ -5,10 +5,11 @@ import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import * as http from "http";
 import "dotenv/config";
+import { Server } from "socket.io";
+
 var cors = require("cors");
 
 const app = express();
-
 app.use(express.json());
 app.use(cors());
 
@@ -18,10 +19,6 @@ const url = process.env.MONGODB_URL as string;
 
 mongoose.connect(url).then(() => {
 	log("Connected to mongodb");
-
-	server = app.listen(8000, () => {
-		console.log("Server started at 8000");
-	});
 });
 
 const exitHandler = () => {
@@ -52,3 +49,13 @@ process.on("SIGTERM", () => {
 
 app.use("/chat_app", authRoute);
 app.use("/chat_app", userRoute);
+
+server = app.listen(8000, () => {
+	console.log("Server started at 8000");
+});
+
+let io: Server = new Server(server);
+
+io.on("connection", (socket) => {
+	console.log(socket, "connection established");
+});
