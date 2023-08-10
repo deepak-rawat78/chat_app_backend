@@ -54,8 +54,26 @@ server = app.listen(8000, () => {
 	console.log("Server started at 8000");
 });
 
-let io: Server = new Server(server);
+let io: Server = new Server(server, {
+	cors: {
+		origin: "*",
+	},
+});
+
+//temp storage
+let userData: {
+	[key: string]: [socketId: string];
+} = {};
 
 io.on("connection", (socket) => {
-	console.log(socket, "connection established");
+	socket.on("ready", (props) => {
+		userData = { ...userData, [props.userName]: socket.id };
+	});
+
+	socket.on("sendMessage", (props) => {
+		const { sendTo, message } = props;
+		if (userData[sendTo]) {
+			io.to(userData[sendTo]).emit("message", message);
+		}
+	});
 });
