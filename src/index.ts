@@ -71,9 +71,12 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("sendMessage", (props) => {
-		const { sendTo, message } = props;
+		const { sendTo, message, from } = props;
 		if (userData[sendTo]) {
-			io.to(userData[sendTo]).emit("message", message);
+			io.to([
+				userData[sendTo].toString(),
+				userData[from].toString(),
+			]).emit("message", props);
 		}
 	});
 });
