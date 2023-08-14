@@ -5,7 +5,8 @@ import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import * as http from "http";
 import "dotenv/config";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
+import { SocketConnection } from "./controllers/socketConnection";
 
 var cors = require("cors");
 
@@ -65,18 +66,8 @@ let userData: {
 	[key: string]: [socketId: string];
 } = {};
 
-io.on("connection", (socket) => {
-	socket.on("ready", (props) => {
-		userData = { ...userData, [props.userName]: socket.id };
-	});
-
-	socket.on("sendMessage", (props) => {
-		const { sendTo, message, from } = props;
-		if (userData[sendTo]) {
-			io.to([
-				userData[sendTo].toString(),
-				userData[from].toString(),
-			]).emit("message", props);
-		}
-	});
+io.on("connection", (socket: Socket) => {
+	const socketService = new SocketConnection(io, socket);
+	socket.on("ready", socketService.handleUserConnect);
+	socket.on("sendMessage", socketService.handleSendMessage);
 });
