@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import SocketModel from "../models/socket.model";
+import User from "../models/user.model";
 
 export class SocketConnection {
 	io: Server;
@@ -31,9 +32,16 @@ export class SocketConnection {
 
 	handleSendMessage = async (props: any) => {
 		const { sendTo, from } = props;
-		const receiverSocket = await SocketModel.findOne({ userId: sendTo });
-		if (receiverSocket) {
-			this.io.to([receiverSocket.socketId]).emit("message", props);
+		const user = await User.findOne({ userName: sendTo });
+		if (user) {
+			const receiverSocket = await SocketModel.findOne({
+				userId: user._id,
+			});
+			if (receiverSocket) {
+				this.io.to([receiverSocket.socketId]).emit("message", props);
+			} else {
+				this.socket.emit("error", new Error("User not found"));
+			}
 		} else {
 			this.socket.emit("error", new Error("User not found"));
 		}

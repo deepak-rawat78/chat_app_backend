@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const socketSchema = new Schema({
 	userId: {
-		type: Schema.ObjectId,
+		type: Schema.Types.ObjectId,
 		required: true,
 	},
 	socketId: {
