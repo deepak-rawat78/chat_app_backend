@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserToken from "../models/userToken.model";
 
-export const ACCESS_TOKEN_EXPIRES_IN = "15s";
+export const ACCESS_TOKEN_EXPIRES_IN = "30m";
 export const REFRESH_TOKEN_EXPIRES_IN = "30d";
 
 const generateTokens = async (user: any) => {
