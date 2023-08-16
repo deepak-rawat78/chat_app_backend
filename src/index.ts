@@ -61,11 +61,6 @@ let io: Server = new Server(server, {
 	},
 });
 
-//temp storage
-let userData: {
-	[key: string]: [socketId: string];
-} = {};
-
 io.on("connection", (socket: Socket) => {
 	const socketService = new SocketConnection(io, socket);
 	socket.on("ready", socketService.handleUserConnect);

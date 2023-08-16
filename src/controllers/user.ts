@@ -6,7 +6,7 @@ export const getUserDetail = async (req: any, res: any) => {
 		const user = await User.findById(req.user._id);
 
 		if (!user) {
-			return res.json({
+			return res.status(400).json({
 				error: true,
 				message: "User not found",
 			});
@@ -16,7 +16,7 @@ export const getUserDetail = async (req: any, res: any) => {
 			data: user,
 		});
 	} catch (error: any) {
-		return res.json({
+		return res.status(400).json({
 			error: true,
 			message: error.message,
 		});
@@ -26,6 +26,7 @@ export const getUserDetail = async (req: any, res: any) => {
 export const addContactToUser = async (req: any, res: any) => {
 	try {
 		const { peerUserName } = req.body;
+
 		const user = await User.findOne({ userName: peerUserName });
 		if (user) {
 			const isContactAlreadyExist = await Contact.findOne({
@@ -34,7 +35,7 @@ export const addContactToUser = async (req: any, res: any) => {
 			});
 
 			if (isContactAlreadyExist) {
-				return res.json({
+				return res.status(400).json({
 					error: true,
 					message: `${peerUserName} already exist in your contact.`,
 				});
@@ -57,8 +58,12 @@ export const addContactToUser = async (req: any, res: any) => {
 				message: "Successfully added user",
 			});
 		}
+		return res.status(400).json({
+			error: true,
+			message: `${peerUserName} not found.`,
+		});
 	} catch (error) {
-		return res.json({
+		return res.status(400).json({
 			error: true,
 			message: error.message,
 		});
@@ -86,7 +91,7 @@ export const getContactList = async (req: any, res: any) => {
 			data: { data: contactList ?? [], total },
 		});
 	} catch (error) {
-		return res.json({
+		return res.status(400).json({
 			error: true,
 			message: error.message,
 		});
