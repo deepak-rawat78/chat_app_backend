@@ -1,4 +1,3 @@
-import { log } from "console";
 import User from "../models/user.model";
 import {
 	loginBodyValidation,
@@ -17,12 +16,14 @@ export const signUpController = async (req: any, res: any) => {
 		const data = signUpBodyValidation(req.body);
 
 		if (data.error) {
-			return res.json({ error: data?.error });
+			return res
+				.status(400)
+				.json({ error: data.error.details[0].message });
 		}
 		let user = await User.findOne({ email: req.body.email });
 
 		if (user) {
-			return res.json({
+			return res.status(400).json({
 				error: "User already exist",
 			});
 		}
@@ -45,7 +46,7 @@ export const signUpController = async (req: any, res: any) => {
 			},
 		});
 	} catch (error) {
-		return res.json({ error: "Something went wrong." });
+		return res.status(400).json({ error: "Something went wrong." });
 	}
 };
 
@@ -53,7 +54,7 @@ export const loginController = async (req: any, res: any) => {
 	try {
 		const { error } = loginBodyValidation(req.body);
 		if (error) {
-			return res.json({ error });
+			return res.json({ error: error.details[0].message });
 		}
 		const user = await User.findOne({ email: req.body.email });
 		if (!user) {
