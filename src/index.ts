@@ -7,6 +7,7 @@ import * as http from "http";
 import "dotenv/config";
 import { Server, Socket } from "socket.io";
 import { SocketConnection } from "./controllers/socketConnection";
+import chatRouter from "./routes/chat.routes";
 
 var cors = require("cors");
 
@@ -50,6 +51,7 @@ process.on("SIGTERM", () => {
 
 app.use("/chat_app", authRoute);
 app.use("/chat_app", userRoute);
+app.use("/chat_app", chatRouter);
 
 server = app.listen(8000, () => {
 	console.log("Server started at 8000");
